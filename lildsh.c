@@ -1,9 +1,14 @@
+#include "builtins.h"
 #include "lildsh.h"
 #include "lildsh_utils.h"
 
 int status = 0;
 
 static void exec(char **args) {
+    if (lildsh_builtin(args)) {
+        return;
+    }
+
     if (lildsh_fork() == 0) {
         lildsh_execvp(args[0], args);
     } else {
