@@ -2,6 +2,32 @@
 
 extern int status;
 
+static bool exit_shell(char **args) {
+    if (strcmp(args[0], "exit") != 0) {
+        return false;
+    }
+
+    if (args[1] == NULL) {
+        exit(status);
+    }
+
+    if (args[2] != NULL) {
+        fprintf(stderr, RED "exit failed: too many arguments" RST "\n");
+        status = EXIT_FAILURE;
+        return true;
+    }
+
+    errno = 0;
+    char *end = NULL;
+    long exit_status = strtol(args[1], &end, 10);
+    if (errno != 0 || end == args[1] || *end != '\0') {
+        fprintf(stderr, RED "exit failed: numeric argument required" RST "\n");
+        exit(EX_USAGE);
+    }
+
+    exit((unsigned char)exit_status);
+}
+
 static bool cd(char **args) {
     if (strcmp(args[0], "cd") != 0) {
         return false;
@@ -32,6 +58,10 @@ static bool cd(char **args) {
 }
 
 bool lildsh_builtin(char **args) {
+    if (exit_shell(args)) {
+        return true;
+    }
+
     if (cd(args)) {
         return true;
     }
