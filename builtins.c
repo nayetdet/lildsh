@@ -57,12 +57,37 @@ static bool cd(char **args) {
     return true;
 }
 
+static bool help(char **args) {
+    if (strcmp(args[0], "help") != 0) {
+        return false;
+    }
+
+    if (args[1] != NULL) {
+        fprintf(stderr, RED "help failed: too many arguments" RST "\n");
+        status = EXIT_FAILURE;
+        return true;
+    }
+
+    printf(CYAN "lildsh builtins" RST "\n");
+    printf("  cd [dir]       change current directory. Defaults to HOME.\n");
+    printf("  exit [status]  exit the shell. Defaults to last command status.\n");
+    printf("  help           show this help message.\n");
+    printf("\nExternal commands are searched in PATH.\n");
+
+    status = EXIT_SUCCESS;
+    return true;
+}
+
 bool lildsh_builtin(char **args) {
     if (exit_shell(args)) {
         return true;
     }
 
     if (cd(args)) {
+        return true;
+    }
+
+    if (help(args)) {
         return true;
     }
 

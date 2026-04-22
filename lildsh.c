@@ -66,8 +66,6 @@ static char *read_line(void) {
 }
 
 int main(void) {
-    rl_bind_keyseq("\033[3~", rl_delete);
-
     char *line = NULL;
     char **args = NULL;
     while ((line = read_line()) != NULL) {
