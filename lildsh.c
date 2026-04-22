@@ -22,7 +22,7 @@ static char **splitline(char *line) {
     size_t position = 0;
     size_t bufsize = BUFSIZ;
     char **tokens = lildsh_malloc(bufsize * sizeof(char *));
-    for (char *token = strtok(line, SPACE); token != NULL; token = strtok(NULL, SPACE)) {
+    for (char *token = strtok(line, LILDSH_SPACE); token != NULL; token = strtok(NULL, LILDSH_SPACE)) {
         tokens[position++] = token;
         if (position >= bufsize) {
             bufsize *= 2;
@@ -34,17 +34,31 @@ static char **splitline(char *line) {
     return tokens;
 }
 
-static char *readline(void) {
+static char *read_line(void) {
     char cwd[BUFSIZ] = "";
     lildsh_getcwd(cwd, sizeof(cwd));
+
     if (isatty(fileno(stdin))) {
+        char prompt[BUFSIZ + 32] = "";
         if (status == 0) {
-            printf(GREEN "%s" RST " ~ $ ", cwd);
+            snprintf(prompt, sizeof(prompt), "\001" GREEN "\002%s\001" RST "\002 ~ $ ", cwd);
         } else {
-            printf(RED "%s" RST " ~ $ ", cwd);
+            snprintf(prompt, sizeof(prompt), "\001" RED "\002%s\001" RST "\002 ~ $ ", cwd);
         }
+
+        char *buf = readline(prompt);
+        if (buf == NULL) {
+            printf(RED "[EOF]\n" RST);
+            return NULL;
+        }
+
+        if (*buf != '\0') {
+            add_history(buf);
+        }
+
+        return buf;
     }
-    
+
     char *buf = NULL;
     size_t bufsize = 0;
     lildsh_getline(&buf, &bufsize, stdin);
@@ -54,7 +68,7 @@ static char *readline(void) {
 int main(void) {
     char *line = NULL;
     char **args = NULL;
-    while ((line = readline()) != NULL) {
+    while ((line = read_line()) != NULL) {
         args = splitline(line);
         if (args[0] != NULL) {
             exec(args);

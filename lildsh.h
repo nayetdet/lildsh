@@ -9,12 +9,14 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sysexits.h>
+#include <readline/history.h>
+#include <readline/readline.h>
 
 /*
 ** Utility macros:
-** SPACE - All whitespace characters for tokenization
+** LILDSH_SPACE - All whitespace characters for tokenization
 */
-#define SPACE "\t\n\v\f\r "
+#define LILDSH_SPACE "\t\n\v\f\r "
 
 /*
 ** ANSI Color codes for terminal output formatting:

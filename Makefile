@@ -4,9 +4,10 @@ NAME = lildsh.out
 SRCS = lildsh.c lildsh_utils.c builtins.c
 CC = gcc
 CFLAGS = -Wall -Wextra -g
+LDLIBS = -lreadline
 
 $(NAME): $(SRCS) lildsh.h lildsh_utils.h builtins.h
-	$(CC) $(CFLAGS) $(SRCS) -o $(NAME)
+	$(CC) $(CFLAGS) $(SRCS) $(LDLIBS) -o $(NAME)
 
 all: run clean
 
